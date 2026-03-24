@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Life Tracker</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
 
 <style>
 body {
@@ -334,6 +338,11 @@ function restoreChat(){
         d.innerText=m.text;
         chat.appendChild(d);
     });
+}
+
+/* SERVICE WORKER */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
 }
 
 /* INIT */

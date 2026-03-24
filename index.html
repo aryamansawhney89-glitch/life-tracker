@@ -342,9 +342,9 @@ function restoreChat(){
 
 /* SERVICE WORKER */
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+  navigator.serviceWorker.register('./sw.js');
 }
-
+    
 /* INIT */
 let scoreEl=document.getElementById("score");
 let coinsEl=document.getElementById("coins");

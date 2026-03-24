@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Life Tracker</title>
+
+<style>
+body {
+    font-family:'Segoe UI';
+    margin:0;
+    transition:0.3s;
+}
+
+/* THEMES */
+body.light {
+    background: linear-gradient(135deg,#5f6fff,#8b5cf6);
+}
+body.dark {
+    background:#121212;
+    color:white;
+}
+
+/* Container */
+.container {
+    max-width:900px;
+    margin:auto;
+    padding:15px;
+}
+
+/* Header */
+.top {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+/* Dashboard */
+.dashboard {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin:10px 0;
+}
+
+.stat {
+    background:white;
+    padding:10px;
+    border-radius:10px;
+    text-align:center;
+}
+.dark .stat { background:#1e1e1e; }
+
+/* Cards */
+.card {
+    background:white;
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:10px;
+}
+.dark .card { background:#1e1e1e; }
+
+/* Input */
+.input {
+    display:flex;
+    gap:5px;
+}
+
+input,select {
+    padding:8px;
+    border-radius:8px;
+    border:none;
+}
+
+/* Button */
+button {
+    padding:8px;
+    border:none;
+    border-radius:8px;
+    background:#4CAF50;
+    color:white;
+}
+
+/* Habit */
+.habit {
+    padding:8px;
+    margin-top:5px;
+    border-radius:8px;
+    color:white;
+}
+
+.health { background:#22c55e; }
+.study { background:#3b82f6; }
+.work { background:#a855f7; }
+
+/* Chat */
+.chat {
+    height:150px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+.msg {
+    padding:8px;
+    border-radius:10px;
+    max-width:70%;
+}
+
+.bot { background:#ddd; }
+.user { background:#4CAF50; color:white; align-self:flex-end; }
+
+/* Graph */
+.graph {
+    display:flex;
+    gap:4px;
+    align-items:flex-end;
+    height:80px;
+}
+.bar {
+    flex:1;
+    background:#4CAF50;
+}
+
+/* Progress */
+.progress {
+    height:6px;
+    background:#ccc;
+    border-radius:10px;
+}
+.fill {
+    height:100%;
+    background:#4CAF50;
+}
+</style>
+</head>
+
+<body class="light">
+
+<div class="container">
+
+<div class="top">
+<h3>🌟 Life Tracker</h3>
+<button onclick="toggleTheme()">🌙</button>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard">
+<div class="stat">⭐ <span id="score">0</span></div>
+<div class="stat">💰 <span id="coins">0</span></div>
+<div class="stat">🔥 <span id="streak">0</span></div>
+</div>
+
+<!-- Input -->
+<div class="card">
+<div class="input">
+<input id="task" placeholder="Habit">
+<select id="cat">
+<option value="health">Health</option>
+<option value="study">Study</option>
+<option value="work">Work</option>
+</select>
+<button onclick="add()">Add</button>
+</div>
+</div>
+
+<!-- Chat -->
+<div class="card">
+<div id="chat" class="chat"></div>
+<div id="actions"></div>
+</div>
+
+<!-- Habits -->
+<div class="card" id="habits"></div>
+
+<!-- Progress -->
+<div class="card">
+<div class="progress"><div id="fill" class="fill"></div></div>
+</div>
+
+<!-- Graph -->
+<div class="card">
+<h4>📊 Weekly Progress</h4>
+<div id="graph" class="graph"></div>
+</div>
+
+</div>
+
+<script>
+
+let habits=[], coins=0, streak=0, score=0;
+let history=[], chatHistory=[];
+
+/* SAVE / LOAD */
+function save(){
+    localStorage.setItem("app", JSON.stringify({
+        habits, coins, streak, score, history, chatHistory,
+        theme: document.body.className
+    }));
+}
+
+function load(){
+    let data = JSON.parse(localStorage.getItem("app"));
+    if(data){
+        habits=data.habits||[];
+        coins=data.coins||0;
+        streak=data.streak||0;
+        score=data.score||0;
+        history=data.history||[];
+        chatHistory=data.chatHistory||[];
+        document.body.className=data.theme||"light";
+    }
+}
+
+/* THEME */
+function toggleTheme(){
+    document.body.className =
+        document.body.classList.contains("dark")?"light":"dark";
+    save();
+}
+
+/* CHAT */
+function addMsg(text,type){
+    let chat=document.getElementById("chat");
+    let d=document.createElement("div");
+    d.className="msg "+type;
+    d.innerText=text;
+    chat.appendChild(d);
+    chat.scrollTop=chat.scrollHeight;
+
+    chatHistory.push({text,type});
+    save();
+}
+
+/* ADD */
+function add(){
+    if(!task.value) return;
+
+    habits.push({
+        id:Date.now(),
+        name:task.value,
+        cat:cat.value,
+        done:false
+    });
+
+    addMsg("Added "+task.value,"user");
+    task.value="";
+    render();
+}
+
+/* TOGGLE */
+function toggle(id){
+    let h=habits.find(x=>x.id==id);
+    h.done=!h.done;
+
+    if(h.done){
+        coins+=5;
+        addMsg("Done "+h.name,"user");
+    }
+
+    updateScore();
+    render();
+}
+
+/* SCORE */
+function updateScore(){
+    let total=habits.length;
+    let done=habits.filter(h=>h.done).length;
+
+    score = total? Math.round((done/total)*100):0;
+
+    history.push(score);
+    if(history.length>7) history.shift();
+
+    if(done===total && total>0) streak++;
+}
+
+/* AI */
+function aiCoach(){
+    let total=habits.length;
+    let done=habits.filter(h=>h.done).length;
+
+    let msg="Start small 💪";
+
+    if(done===0 && total>0) msg="Do one task 🔥";
+    else if(done<total) msg="Keep going 🚀";
+    else msg="Perfect day 💯";
+
+    addMsg(msg,"bot");
+}
+
+/* GRAPH */
+function renderGraph(){
+    let g=document.getElementById("graph");
+    g.innerHTML="";
+    history.forEach(v=>{
+        g.innerHTML+=`<div class="bar" style="height:${v}px"></div>`;
+    });
+}
+
+/* RENDER */
+function render(){
+
+    let div=document.getElementById("habits");
+    div.innerHTML="";
+
+    habits.forEach(h=>{
+        div.innerHTML+=`
+        <div class="habit ${h.cat}">
+        <input type="checkbox" ${h.done?"checked":""}
+        onchange="toggle(${h.id})">
+        ${h.name}
+        </div>`;
+    });
+
+    let done=habits.filter(h=>h.done).length;
+    let total=habits.length;
+
+    fill.style.width = total? (done/total)*100+"%":"0%";
+
+    scoreEl.innerText=score;
+    coinsEl.innerText=coins;
+    streakEl.innerText=streak;
+
+    renderGraph();
+    save();
+}
+
+/* RESTORE CHAT */
+function restoreChat(){
+    chatHistory.forEach(m=>{
+        let d=document.createElement("div");
+        d.className="msg "+m.type;
+        d.innerText=m.text;
+        chat.appendChild(d);
+    });
+}
+
+/* INIT */
+let scoreEl=document.getElementById("score");
+let coinsEl=document.getElementById("coins");
+let streakEl=document.getElementById("streak");
+
+load();
+restoreChat();
+
+if(chatHistory.length===0){
+    addMsg("Hey 👋 I'm your coach","bot");
+}
+
+render();
+
+</script>
+
+</body>
+</html>

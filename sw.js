@@ -1,10 +1,10 @@
-const CACHE_NAME = "life-tracker-v2";
+const CACHE_NAME = "life-tracker-v3";
 
 const FILES_TO_CACHE = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./icon.png"
+  "/life-tracker/",
+  "/life-tracker/index.html",
+  "/life-tracker/manifest.json",
+  "/life-tracker/icon.png"
 ];
 
 self.addEventListener("install", event => {

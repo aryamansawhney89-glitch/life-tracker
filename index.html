@@ -9,6 +9,9 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5f6fff">
 
+<!-- IMPORTANT for GitHub Pages -->
+<base href="/life-tracker/">
+
 <style>
 body {
     font-family:'Segoe UI';
@@ -16,7 +19,6 @@ body {
     transition:0.3s;
 }
 
-/* THEMES */
 body.light {
     background: linear-gradient(135deg,#5f6fff,#8b5cf6);
 }
@@ -25,21 +27,18 @@ body.dark {
     color:white;
 }
 
-/* Container */
 .container {
     max-width:900px;
     margin:auto;
     padding:15px;
 }
 
-/* Header */
 .top {
     display:flex;
     justify-content:space-between;
     align-items:center;
 }
 
-/* Dashboard */
 .dashboard {
     display:grid;
     grid-template-columns:repeat(3,1fr);
@@ -55,7 +54,6 @@ body.dark {
 }
 .dark .stat { background:#1e1e1e; }
 
-/* Cards */
 .card {
     background:white;
     padding:12px;
@@ -64,7 +62,6 @@ body.dark {
 }
 .dark .card { background:#1e1e1e; }
 
-/* Input */
 .input {
     display:flex;
     gap:5px;
@@ -76,7 +73,6 @@ input,select {
     border:none;
 }
 
-/* Button */
 button {
     padding:8px;
     border:none;
@@ -85,7 +81,6 @@ button {
     color:white;
 }
 
-/* Habit */
 .habit {
     padding:8px;
     margin-top:5px;
@@ -97,7 +92,6 @@ button {
 .study { background:#3b82f6; }
 .work { background:#a855f7; }
 
-/* Chat */
 .chat {
     height:150px;
     overflow-y:auto;
@@ -115,7 +109,6 @@ button {
 .bot { background:#ddd; }
 .user { background:#4CAF50; color:white; align-self:flex-end; }
 
-/* Graph */
 .graph {
     display:flex;
     gap:4px;
@@ -127,7 +120,6 @@ button {
     background:#4CAF50;
 }
 
-/* Progress */
 .progress {
     height:6px;
     background:#ccc;
@@ -149,14 +141,12 @@ button {
 <button onclick="toggleTheme()">🌙</button>
 </div>
 
-<!-- Dashboard -->
 <div class="dashboard">
 <div class="stat">⭐ <span id="score">0</span></div>
 <div class="stat">💰 <span id="coins">0</span></div>
 <div class="stat">🔥 <span id="streak">0</span></div>
 </div>
 
-<!-- Input -->
 <div class="card">
 <div class="input">
 <input id="task" placeholder="Habit">
@@ -169,20 +159,16 @@ button {
 </div>
 </div>
 
-<!-- Chat -->
 <div class="card">
 <div id="chat" class="chat"></div>
 </div>
 
-<!-- Habits -->
 <div class="card" id="habits"></div>
 
-<!-- Progress -->
 <div class="card">
 <div class="progress"><div id="fill" class="fill"></div></div>
 </div>
 
-<!-- Graph -->
 <div class="card">
 <h4>📊 Weekly Progress</h4>
 <div id="graph" class="graph"></div>
@@ -282,7 +268,6 @@ function renderGraph(){
 }
 
 function render(){
-
     let div=document.getElementById("habits");
     div.innerHTML="";
 
@@ -319,7 +304,7 @@ function restoreChat(){
 
 /* SERVICE WORKER */
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
+  navigator.serviceWorker.register('/life-tracker/sw.js');
 }
 
 let scoreEl=document.getElementById("score");

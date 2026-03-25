@@ -1,4 +1,4 @@
-const CACHE_NAME = "life-tracker-v1";
+const CACHE_NAME = "life-tracker-v2";
 
 const FILES_TO_CACHE = [
   "./",
@@ -7,9 +7,8 @@ const FILES_TO_CACHE = [
   "./icon.png"
 ];
 
-/* INSTALL */
 self.addEventListener("install", event => {
-  self.skipWaiting(); // activate immediately
+  self.skipWaiting();
 
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -18,14 +17,13 @@ self.addEventListener("install", event => {
   );
 });
 
-/* ACTIVATE */
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
         keys.map(key => {
           if (key !== CACHE_NAME) {
-            return caches.delete(key); // delete old caches
+            return caches.delete(key);
           }
         })
       );
@@ -33,7 +31,6 @@ self.addEventListener("activate", event => {
   );
 });
 
-/* FETCH */
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(response => {

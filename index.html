@@ -7,6 +7,7 @@
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5f6fff">
 
 <style>
 body {
@@ -171,7 +172,6 @@ button {
 <!-- Chat -->
 <div class="card">
 <div id="chat" class="chat"></div>
-<div id="actions"></div>
 </div>
 
 <!-- Habits -->
@@ -195,7 +195,6 @@ button {
 let habits=[], coins=0, streak=0, score=0;
 let history=[], chatHistory=[];
 
-/* SAVE / LOAD */
 function save(){
     localStorage.setItem("app", JSON.stringify({
         habits, coins, streak, score, history, chatHistory,
@@ -216,14 +215,12 @@ function load(){
     }
 }
 
-/* THEME */
 function toggleTheme(){
     document.body.className =
         document.body.classList.contains("dark")?"light":"dark";
     save();
 }
 
-/* CHAT */
 function addMsg(text,type){
     let chat=document.getElementById("chat");
     let d=document.createElement("div");
@@ -236,7 +233,6 @@ function addMsg(text,type){
     save();
 }
 
-/* ADD */
 function add(){
     if(!task.value) return;
 
@@ -252,7 +248,6 @@ function add(){
     render();
 }
 
-/* TOGGLE */
 function toggle(id){
     let h=habits.find(x=>x.id==id);
     h.done=!h.done;
@@ -266,7 +261,6 @@ function toggle(id){
     render();
 }
 
-/* SCORE */
 function updateScore(){
     let total=habits.length;
     let done=habits.filter(h=>h.done).length;
@@ -279,21 +273,6 @@ function updateScore(){
     if(done===total && total>0) streak++;
 }
 
-/* AI */
-function aiCoach(){
-    let total=habits.length;
-    let done=habits.filter(h=>h.done).length;
-
-    let msg="Start small 💪";
-
-    if(done===0 && total>0) msg="Do one task 🔥";
-    else if(done<total) msg="Keep going 🚀";
-    else msg="Perfect day 💯";
-
-    addMsg(msg,"bot");
-}
-
-/* GRAPH */
 function renderGraph(){
     let g=document.getElementById("graph");
     g.innerHTML="";
@@ -302,7 +281,6 @@ function renderGraph(){
     });
 }
 
-/* RENDER */
 function render(){
 
     let div=document.getElementById("habits");
@@ -330,7 +308,6 @@ function render(){
     save();
 }
 
-/* RESTORE CHAT */
 function restoreChat(){
     chatHistory.forEach(m=>{
         let d=document.createElement("div");
@@ -344,8 +321,7 @@ function restoreChat(){
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
-    
-/* INIT */
+
 let scoreEl=document.getElementById("score");
 let coinsEl=document.getElementById("coins");
 let streakEl=document.getElementById("streak");
